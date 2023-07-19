@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UserSecretsId>5ea86915-c0e4-48c5-bcbf-b4153cc58145</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="test.bin" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="test.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
