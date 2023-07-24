@@ -12,6 +12,8 @@ using System.Windows;
 using System.Xml.Linq;
 using CADHub.Models;
 using System.Security.Cryptography;
+using System.Net;
+using CADHub.Pages;
 
 namespace CADHub.ViewModels
 {
@@ -32,6 +34,8 @@ namespace CADHub.ViewModels
             ConnectedProjects = new ObservableCollection<Project>();
             byte[] encrypted = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test.bin"));
             LAMBDA_URL = DecryptString(encrypted, "erfit89shdFerGwe", "aw9dHdfi78E3Fer3");
+            var temp = LoginPage.Token;
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + LoginPage.Token);
             RestoreProjects();
         }
 
@@ -73,7 +77,7 @@ namespace CADHub.ViewModels
             ConnectedProjects.Remove((Project)project!);
         }
 
-        private static byte[] EncryptString(string plainText, string key, string iv)
+        public static byte[] EncryptString(string plainText, string key, string iv)
         {
             using Aes aes = Aes.Create();
             aes.Key = Encoding.UTF8.GetBytes(key);
@@ -81,7 +85,7 @@ namespace CADHub.ViewModels
             aes.IV = Encoding.UTF8.GetBytes(iv);
             return aes.CreateEncryptor().TransformFinalBlock(Encoding.UTF8.GetBytes(plainText), 0, plainText.Length);
         }
-        private static string DecryptString(byte[] cipherText, string key, string iv)
+        public static string DecryptString(byte[] cipherText, string key, string iv)
         {
             using Aes aes = Aes.Create();
             aes.Key = Encoding.UTF8.GetBytes(key);
@@ -92,6 +96,8 @@ namespace CADHub.ViewModels
         readonly string LAMBDA_URL;
 
         private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient clientS3 = new HttpClient();
+
 
         public async void MergeChanges()
         {
@@ -129,7 +135,7 @@ namespace CADHub.ViewModels
                                     HttpResponseMessage getResponse;
                                     try
                                     {
-                                        var getResponseTask = client.GetAsync(preSignedUrl);
+                                        var getResponseTask = clientS3.GetAsync(preSignedUrl);
                                         getResponseTask.Wait();
                                         getResponse = getResponseTask.Result;
                                         if (getResponse.IsSuccessStatusCode)
@@ -206,7 +212,7 @@ namespace CADHub.ViewModels
                 var preSignedUrl2 = preSignedUrl2Task.Result;
 
                 // Use presigned url to get file information
-                var fetchResponseTask = client.GetAsync(preSignedUrl2);
+                var fetchResponseTask = clientS3.GetAsync(preSignedUrl2);
                 fetchResponseTask.Wait();
                 var fetchResponse = fetchResponseTask.Result;
                 if (fetchResponse.IsSuccessStatusCode)
@@ -255,7 +261,7 @@ namespace CADHub.ViewModels
                 string preSignedUrl = await response.Content.ReadAsStringAsync();
 
                 // Use presigned url to get all file paths
-                HttpResponseMessage fetchResponse = await client.GetAsync(preSignedUrl);
+                HttpResponseMessage fetchResponse = await clientS3.GetAsync(preSignedUrl);
                 if (fetchResponse.IsSuccessStatusCode)
                 {
                     var responseContentString = await fetchResponse.Content.ReadAsStringAsync();
@@ -358,7 +364,7 @@ namespace CADHub.ViewModels
                                     {
                                         using (Stream fileStream = File.OpenRead(change.FilePath))
                                         {
-                                            var putTask = client.PutAsync(preSignedUrl, new StreamContent(fileStream));
+                                            var putTask = clientS3.PutAsync(preSignedUrl, new StreamContent(fileStream));
                                             while (!putTask.IsCompleted)
                                             {
                                                 int pos = (int)Math.Round(30 * (fileStream.Position / (double)fileStream.Length));
@@ -386,7 +392,7 @@ namespace CADHub.ViewModels
                                     var preSignedUrl = preSignedUrlTask.Result;
 
                                     // Use presigned url to delete file
-                                    var deleteResponseTask = client.DeleteAsync(preSignedUrl);
+                                    var deleteResponseTask = clientS3.DeleteAsync(preSignedUrl);
                                     var deleteResponse = deleteResponseTask.Result;
                                     if (deleteResponse.IsSuccessStatusCode) { }
                                     else MessageBox.Show(deleteResponse.StatusCode.ToString());

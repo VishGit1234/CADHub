@@ -10,12 +10,24 @@
 
   <ItemGroup>
     <None Remove="test.bin" />
+    <None Remove="test2.bin" />
+    <None Remove="test3.bin" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="test.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="test2.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="test3.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1823.32" />
   </ItemGroup>
 
 </Project>

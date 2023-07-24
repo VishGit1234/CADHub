@@ -12,5 +12,6 @@
         <DrawingImage/>
     </Window.Icon>
 
-    <Frame x:Name="_mainFrame" Source="./Pages/MainApplication.xaml"/>
+    <!--<Frame x:Name="_mainFrame" Source="./Pages/MainApplication.xaml"/>-->
+    <Frame Background="#121212" x:Name="_mainFrame" NavigationUIVisibility="Hidden"/>
 </Window>

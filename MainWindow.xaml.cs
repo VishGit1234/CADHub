@@ -1,6 +1,9 @@
-﻿using System;
+﻿using CADHub.Pages;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -20,6 +23,15 @@ namespace CADHub
                 DarkTitleBar(this);
             }
             catch { }
+            var page = new LoginPage();
+            _mainFrame.Navigate(page);
+            page.DoneLogin += DoneLogin;
+        }
+
+        private void DoneLogin(object? sender, EventArgs e)
+        {
+            var mainApplication = new MainApplication();
+            _mainFrame.Navigate(mainApplication);
         }
 
         // For making the title bar dark
