@@ -7,6 +7,9 @@ CADHub is a simple to use Windows Desktop Application that allows you to create 
 - User Authentication using Amazon Cognito 
 - The backend consists of AWS Lambda functions behind a AWS API Gateway that creates presigned urls to allow the client application to download and upload objects from and to S3
 
+**Main Page**
+![alt text](https://github.com/VishGit1234/CADHub/blob/master/MainWindow.png?raw=true)
+
 ## Changes in Progress
 - Add project sharing features and a full settings page
 - Create website to download application (and maybe add some web features)
